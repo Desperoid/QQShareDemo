@@ -25,6 +25,11 @@
 		D07C446E1DFA8A56008EAA38 /* TencentOpenApi_IOS_Bundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D07C446C1DFA8A55008EAA38 /* TencentOpenApi_IOS_Bundle.bundle */; };
 		D07C446F1DFA8A56008EAA38 /* TencentOpenAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D07C446D1DFA8A56008EAA38 /* TencentOpenAPI.framework */; };
 		D07C44771DFA9816008EAA38 /* QQShareManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D07C44761DFA9816008EAA38 /* QQShareManager.m */; };
+		D0A110C31DFE44FC0096FC6E /* WeakObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A110C21DFE44FC0096FC6E /* WeakObject.m */; };
+		D0A110C91DFE4ED90096FC6E /* Doug Paisley - No One But You.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D0A110C51DFE4ED90096FC6E /* Doug Paisley - No One But You.mp3 */; };
+		D0A110CA1DFE4ED90096FC6E /* vulcan-1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D0A110C61DFE4ED90096FC6E /* vulcan-1.jpg */; };
+		D0A110CB1DFE4ED90096FC6E /* vulcan-2.JPG in Resources */ = {isa = PBXBuildFile; fileRef = D0A110C71DFE4ED90096FC6E /* vulcan-2.JPG */; };
+		D0A110CC1DFE4ED90096FC6E /* vulcan.png in Resources */ = {isa = PBXBuildFile; fileRef = D0A110C81DFE4ED90096FC6E /* vulcan.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +57,12 @@
 		D07C446D1DFA8A56008EAA38 /* TencentOpenAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TencentOpenAPI.framework; path = QQshareDemo/Frameworks/TencentOpenAPI.framework; sourceTree = "<group>"; };
 		D07C44751DFA9816008EAA38 /* QQShareManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QQShareManager.h; sourceTree = "<group>"; };
 		D07C44761DFA9816008EAA38 /* QQShareManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QQShareManager.m; sourceTree = "<group>"; };
+		D0A110C11DFE44FC0096FC6E /* WeakObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeakObject.h; sourceTree = "<group>"; };
+		D0A110C21DFE44FC0096FC6E /* WeakObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeakObject.m; sourceTree = "<group>"; };
+		D0A110C51DFE4ED90096FC6E /* Doug Paisley - No One But You.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Doug Paisley - No One But You.mp3"; sourceTree = "<group>"; };
+		D0A110C61DFE4ED90096FC6E /* vulcan-1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "vulcan-1.jpg"; sourceTree = "<group>"; };
+		D0A110C71DFE4ED90096FC6E /* vulcan-2.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "vulcan-2.JPG"; sourceTree = "<group>"; };
+		D0A110C81DFE4ED90096FC6E /* vulcan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vulcan.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				D07C44331DFA4ED2008EAA38 /* QQshareDemo */,
+				D0A110C41DFE4ED90096FC6E /* shareFile */,
 				D07C44321DFA4ED2008EAA38 /* Products */,
 				D07C44551DFA82C8008EAA38 /* Frameworks */,
 			);
@@ -102,6 +114,8 @@
 				D07C444E1DFA5E70008EAA38 /* ShareViewController.m */,
 				D07C44751DFA9816008EAA38 /* QQShareManager.h */,
 				D07C44761DFA9816008EAA38 /* QQShareManager.m */,
+				D0A110C11DFE44FC0096FC6E /* WeakObject.h */,
+				D0A110C21DFE44FC0096FC6E /* WeakObject.m */,
 				D07C443D1DFA4ED2008EAA38 /* Main.storyboard */,
 				D07C44401DFA4ED2008EAA38 /* Assets.xcassets */,
 				D07C44421DFA4ED2008EAA38 /* LaunchScreen.storyboard */,
@@ -136,6 +150,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D0A110C41DFE4ED90096FC6E /* shareFile */ = {
+			isa = PBXGroup;
+			children = (
+				D0A110C51DFE4ED90096FC6E /* Doug Paisley - No One But You.mp3 */,
+				D0A110C61DFE4ED90096FC6E /* vulcan-1.jpg */,
+				D0A110C71DFE4ED90096FC6E /* vulcan-2.JPG */,
+				D0A110C81DFE4ED90096FC6E /* vulcan.png */,
+			);
+			name = shareFile;
+			path = QQshareDemo/shareFile;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -167,6 +193,7 @@
 				TargetAttributes = {
 					D07C44301DFA4ED2008EAA38 = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = Z429JQWA8Q;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -194,9 +221,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0A110CA1DFE4ED90096FC6E /* vulcan-1.jpg in Resources */,
+				D0A110C91DFE4ED90096FC6E /* Doug Paisley - No One But You.mp3 in Resources */,
+				D0A110CB1DFE4ED90096FC6E /* vulcan-2.JPG in Resources */,
 				D07C446E1DFA8A56008EAA38 /* TencentOpenApi_IOS_Bundle.bundle in Resources */,
 				D07C44441DFA4ED2008EAA38 /* LaunchScreen.storyboard in Resources */,
 				D07C44411DFA4ED2008EAA38 /* Assets.xcassets in Resources */,
+				D0A110CC1DFE4ED90096FC6E /* vulcan.png in Resources */,
 				D07C443F1DFA4ED2008EAA38 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,6 +243,7 @@
 				D07C44391DFA4ED2008EAA38 /* AppDelegate.m in Sources */,
 				D07C444F1DFA5E70008EAA38 /* ShareViewController.m in Sources */,
 				D07C44771DFA9816008EAA38 /* QQShareManager.m in Sources */,
+				D0A110C31DFE44FC0096FC6E /* WeakObject.m in Sources */,
 				D07C44361DFA4ED2008EAA38 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -332,7 +364,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z429JQWA8Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/QQshareDemo/Frameworks",
@@ -348,7 +380,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Z429JQWA8Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/QQshareDemo/Frameworks",
@@ -379,6 +411,7 @@
 				D07C444A1DFA4ED2008EAA38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

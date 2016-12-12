@@ -65,6 +65,28 @@ static NSString * const cellIdentifier = @"cellIdentifier";
    if ([segue.identifier isEqualToString:@"toShareVC"]) {
       ShareViewController *controller = segue.destinationViewController;
       controller.title = @"share";
+      NSUInteger index = [self.tableView indexPathForCell:sender].row;
+      ShareType t;
+      switch (index) {
+         case 0:
+            t = ShareTypeText;
+            break;
+         case 1:
+            t = ShareTypeImage;
+            break;
+         case 2:
+            t = ShareTypeURL;
+            break;
+         case 3:
+            t = ShareTypeMusic;
+            break;
+         case 4:
+            t = ShareTypeFile;
+            break;
+         default:
+            break;
+      }
+      controller.shareType = t;
    }
 }
 

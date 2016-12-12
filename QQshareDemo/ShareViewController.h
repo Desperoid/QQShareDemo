@@ -8,10 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, ShareType) {
+   ShareTypeText              = 0,
+   ShareTypeImage,
+   ShareTypeImagesToFavorite,
+   ShareTypeURL,
+   ShareTypeMusic,
+   ShareTypeFile,
+};
+
 @interface ShareViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UITextField *TitleTextField;
 @property (weak, nonatomic) IBOutlet UITextView *DesTextView;
 @property (weak, nonatomic) IBOutlet UITextView *contentTextView;
 @property (weak, nonatomic) IBOutlet UITextView *URLTextView;
-
+@property (nonatomic, assign) ShareType shareType;
 @end

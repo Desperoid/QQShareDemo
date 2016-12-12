@@ -11,6 +11,32 @@
 #import <TencentOpenAPI/QQApiInterface.h>
 #import <TencentOpenAPI/TencentOAuth.h>
 
+typedef NS_ENUM(NSUInteger, QQShareManagerResult) {
+   QQShareManagerResultSuccess,
+   QQShareManagerResultFail,
+};
+
+@protocol QQShareManagerDelegate <NSObject>
+@optional
+
+/**
+ 向手Q发起分享请求后返回的请求结果
+
+ @param result 请求响应结果，成功或失败
+ @param error  error
+ */
+- (void)onQQShareSendRequestResult:(QQShareManagerResult) result error:(NSError *)error;
+
+
+/**
+ 
+ 手Q分享结果的回调函数
+ @param result 分享结果
+ @param error  error
+ */
+- (void)onQQShareShareResult:(QQShareManagerResult) result error:(NSError *)error;
+@end
+
 typedef NS_ENUM(NSUInteger, QQPlatform) {
    QQPlatformQQ,
    QQPlatformQZone
@@ -26,11 +52,26 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
 + (instancetype)shareInstance;
 
 /**
+ 添加QQShareManagerDelegate的监听者
+
+ @param listener 监听者
+ */
+- (void)addListener:(id<QQShareManagerDelegate>) listener;
+
+
+/**
+ 移除QQShareManagerDelegate的监听者
+
+ @param listener 监听者
+ */
+- (void)removeListener:(id<QQShareManagerDelegate>) listener;
+
+/**
  分享纯文字到qq
 
  @param text 分享文字内容
  */
-- (void)shareToQQWithTextMessage:(NSString *)text;
+- (BOOL)shareToQQWithTextMessage:(NSString *)text;
 
 /**
  分享纯图片到qq
@@ -40,7 +81,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  */
-- (void)shareToQQWithImageData:(NSData *)imageData
+- (BOOL)shareToQQWithImageData:(NSData *)imageData
               preivewImageData:(NSData *)previewImageData
                          title:(NSString *)title
                    description:(NSString *)description;
@@ -53,7 +94,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  */
-- (void)shareToQQFavoritesWithImagesData:(NSArray<NSData*>*)imagesData
+- (BOOL)shareToQQFavoritesWithImagesData:(NSArray<NSData*>*)imagesData
                         previewImageData:(NSData *)previewImageData
                                    title:(NSString *)title
                              description:(NSString *)description;
@@ -67,7 +108,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param description 描述
  @param platform 平台，QQ或QZONE
  */
-- (void)shareURL:(NSURL *)url
+- (BOOL)shareURL:(NSURL *)url
  previewImageURL:(NSURL *)imageURL
            title:(NSString *)title
      description:(NSString *)description
@@ -84,13 +125,30 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param description 分享描述
  @param platform 平台，QQ或QZONE
  */
-- (void)shareMusicURL:(NSURL *)url
+- (BOOL)shareMusicURL:(NSURL *)url
       preivewImageURL:(NSURL *)imageURL
              flashURL:(NSURL *)flashURL
                 title:(NSString *)title
           description:(NSString *)description
          toQQPlatform:(QQPlatform)platform;
 
+
+/**
+ 分享视频
+
+ @param url 分享跳转URL
+ @param imageURL 分享预览图片URL
+ @param flashURL 视频播放流媒体地址
+ @param title 分享标题
+ @param description 分享描述
+ @param platform 平台，QQ或QZONE
+ */
+- (BOOL)shareVideoURL:(NSURL *)url
+      previewImageURL:(NSURL *)imageURL
+             flashURL:(NSURL *)flashURL
+                title:(NSString *)title
+          description:(NSString *)description
+         toQQPlatform:(QQPlatform)platform;
 
 /**
  分享文件（仅数据线）
@@ -101,10 +159,12 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  */
-- (void)shareToQQWithFilePath:(NSString *)filePath
+- (BOOL)shareToQQWithFilePath:(NSString *)filePath
                      fileName:(NSString *)fileName
             preiviewImageData:(NSData *)imageData
                         title:(NSString *)title
                   description:(NSString *)description;
+
+
 
 @end
