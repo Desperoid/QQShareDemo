@@ -11,6 +11,7 @@
 
 static NSString *const QQAppId = @"1105800529";
 
+
 @interface QQShareManager ()
 @property (nonatomic, strong) TencentOAuth *tencentOAuth;
 @property (nonatomic, strong) NSMutableArray<WeakObject*> *listeners;
@@ -73,7 +74,6 @@ static NSString *const QQAppId = @"1105800529";
    QQApiSendResultCode sent = [QQApiInterface sendReq:req];
    [self delegateQQShareSendRequestResult:sent];
    return sent == EQQAPISENDSUCESS;
-#pragma unused(sent)
 }
 
 - (BOOL)shareToQQWithImageData:(NSData *)imageData
@@ -107,6 +107,7 @@ static NSString *const QQAppId = @"1105800529";
                         title:(NSString *)title
                   description:(NSString *)description
 {
+   
    if ( [filePath hasSuffix:@".png"] ||
         [filePath hasSuffix:@".jpg"]) {
       NSData *fileData = [NSData dataWithContentsOfFile:filePath];
@@ -223,6 +224,9 @@ static NSString *const QQAppId = @"1105800529";
 - (void)delegateQQShareSendRequestResult:(QQApiSendResultCode)sent
 {
    QQShareManagerResult result = sent == 0 ? QQShareManagerResultSuccess : QQShareManagerResultFail;
+   if (![QQApiInterface isQQInstalled]) {
+      sent = EQQAPIQQNOTINSTALLED;
+   }
    NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
    for (WeakObject *wo in self.listeners) {
       id<QQShareManagerDelegate> listener = wo.weakObject;
@@ -310,4 +314,6 @@ static NSString *const kQQBaseRespErrorDomain = @"QQShareManager.qqBaseRespError
    NSError *error = [NSError errorWithDomain:kQQBaseRespErrorDomain code:errorcode userInfo:@{@"errorDescription":description}];
    return error;
 }
+
+
 @end

@@ -13,8 +13,7 @@
 - (BOOL)isEqual:(id)object
 {
    if ([object isKindOfClass:[self class]]) {
-      WeakObject *wObejct = object;
-      return [self.weakObject isEqual:wObejct.weakObject];
+      return [self.weakObject isEqual:((WeakObject*)object).weakObject];
    }
    return [super isEqual:object];
 }

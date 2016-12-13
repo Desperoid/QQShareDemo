@@ -71,7 +71,7 @@
    else {
       resultString = @"分享失败";
    }
-   UIAlertController *controller = [UIAlertController alertControllerWithTitle:resultString message:nil preferredStyle:UIAlertControllerStyleAlert ];
+   UIAlertController *controller = [UIAlertController alertControllerWithTitle:resultString message:error.userInfo[@"errorDescription"] preferredStyle:UIAlertControllerStyleAlert ];
    UIAlertAction *action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
       [controller dismissViewControllerAnimated:YES completion:nil];
    }];

@@ -46,6 +46,8 @@
 		<string>mqqapiwallet</string>
 		<string>mqqbrowser</string>
 		<string>mqqopensdkdataline</string>
+		<string>wtloginmqq2</string>
+		<string>mqqOpensdkSSoLogin</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
