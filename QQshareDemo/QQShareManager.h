@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
    QQPlatformQZone
 };
 
-@interface QQShareManager : NSObject <TencentSessionDelegate>
+@interface QQShareManager : NSObject <TencentSessionDelegate,QQApiInterfaceDelegate>
 
 /**
  获取QQShareManager单例

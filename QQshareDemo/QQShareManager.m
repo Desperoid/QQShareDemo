@@ -223,18 +223,25 @@ static NSString *const QQAppId = @"1105800529";
 }
 
 #pragma mark - QQApiInterfaceDelegate
+-(void)onReq:(QQBaseReq *)req
+{
+   
+}
+
 - (void)onResp:(QQBaseResp *)resp
 {
    [self delegateQQShareShareResult:resp];
+}
+
+- (void)isOnlineResponse:(NSDictionary *)response
+{
+   
 }
 
 #pragma mark - delegate convenience function
 - (void)delegateQQShareSendRequestResult:(QQApiSendResultCode)sent
 {
    QQShareManagerResult result = sent == 0 ? QQShareManagerResultSuccess : QQShareManagerResultFail;
-   if (![QQApiInterface isQQInstalled]) {
-      sent = EQQAPIQQNOTINSTALLED;
-   }
    NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
    for (WeakObject *wo in self.listeners) {
       id<QQShareManagerDelegate> listener = wo.weakObject;
