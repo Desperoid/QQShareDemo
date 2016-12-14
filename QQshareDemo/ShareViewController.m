@@ -76,7 +76,7 @@
       [controller dismissViewControllerAnimated:YES completion:nil];
    }];
    [controller addAction:action];
-   [self presentViewController:controller animated:YES completion:nil];
+   [self presentViewController:controller animated:NO completion:nil];
 }
 
 #pragma mark - private funtion

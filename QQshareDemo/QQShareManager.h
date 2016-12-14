@@ -67,6 +67,13 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
 - (void)removeListener:(id<QQShareManagerDelegate>) listener;
 
 /**
+ 是否安装手机QQ
+
+ @return 是否安装手机QQ
+ */
+- (BOOL)isQQInstalled;
+
+/**
  分享纯文字到qq
 
  @param text 分享文字内容

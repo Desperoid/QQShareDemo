@@ -18,10 +18,6 @@ static NSString *const QQAppId = @"1105800529";
 @end
 
 @implementation QQShareManager
-+(void)load
-{
-   [self shareInstance];
-}
 
 #pragma mark - life circle
 
@@ -65,10 +61,17 @@ static NSString *const QQAppId = @"1105800529";
    [self.listeners removeObject:wo];
 }
 
+- (BOOL)isQQInstalled
+{
+   return [QQApiInterface isQQInstalled];
+}
 
+#pragma mark - QQ Share
 - (BOOL)shareToQQWithTextMessage:(NSString *)text
 {
-
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiTextObject *txtObj = [QQApiTextObject objectWithText:text];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:txtObj];
    QQApiSendResultCode sent = [QQApiInterface sendReq:req];
@@ -81,6 +84,9 @@ static NSString *const QQAppId = @"1105800529";
                          title:(NSString *)title
                    description:(NSString *)description
 {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiImageObject *imageObj = [QQApiImageObject objectWithData:imageData previewImageData:previewImageData title:title description:description];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imageObj];
    QQApiSendResultCode sent = [QQApiInterface sendReq:req];
@@ -93,6 +99,9 @@ static NSString *const QQAppId = @"1105800529";
                                    title:(NSString *)title
                              description:(NSString *)description
 {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiImageObject *imgObj = [QQApiImageObject objectWithData:previewImageData previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
    [imgObj setCflag:kQQAPICtrlFlagQQShareFavorites];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imgObj];
@@ -107,9 +116,10 @@ static NSString *const QQAppId = @"1105800529";
                         title:(NSString *)title
                   description:(NSString *)description
 {
-   
-   if ( [filePath hasSuffix:@".png"] ||
-        [filePath hasSuffix:@".jpg"]) {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
+   if ( [self isImageFileName:filePath]) {
       NSData *fileData = [NSData dataWithContentsOfFile:filePath];
       QQApiImageObject *imgObjc = [QQApiImageObject objectWithData:fileData previewImageData:imageData title:title description:description];
       [imgObjc setCflag:kQQAPICtrlFlagQQShareDataline];
@@ -117,7 +127,8 @@ static NSString *const QQAppId = @"1105800529";
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
       [self delegateQQShareSendRequestResult:sent];
       return sent == EQQAPISENDSUCESS;
-   }else {
+   }
+   else {
       NSData *fileData = [NSData dataWithContentsOfFile:filePath];
       QQApiFileObject *fileObj = [QQApiFileObject objectWithData:fileData previewImageData:imageData title:title description:description];
       fileObj.fileName = fileName;
@@ -136,6 +147,9 @@ static NSString *const QQAppId = @"1105800529";
           description:(NSString *)description
          toQQPlatform:(QQPlatform)platform
 {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiAudioObject *audioObj = [QQApiAudioObject objectWithURL:url title:title description:description previewImageURL:imageURL];
    [audioObj setFlashURL:flashURL];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:audioObj];
@@ -157,6 +171,9 @@ static NSString *const QQAppId = @"1105800529";
           description:(NSString *)description
          toQQPlatform:(QQPlatform)platform
 {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiVideoObject *videoObj = [QQApiVideoObject objectWithURL:url title:title description:description previewImageURL:imageURL];
    [videoObj setFlashURL:flashURL];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:videoObj];
@@ -173,6 +190,9 @@ static NSString *const QQAppId = @"1105800529";
 
 - (BOOL)shareURL:(NSURL *)url previewImageURL:(NSURL *)imageURL title:(NSString *)title description:(NSString *)description toQQPlatform:(QQPlatform)platform
 {
+   if (![self cheakIsQQInstalled]) {
+      return NO;
+   }
    QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageURL:imageURL];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:newsObj];
    QQApiSendResultCode sent;
@@ -206,18 +226,6 @@ static NSString *const QQAppId = @"1105800529";
 - (void)onResp:(QQBaseResp *)resp
 {
    [self delegateQQShareShareResult:resp];
-}
-
-#pragma mark - TencentSessionDelegate
-//分享到QZone回调
-- (void)addShareResponse:(APIResponse*) response
-{
-   
-}
-
-- (void)responseDidReceived:(APIResponse*)response forMessage:(NSString *)message
-{
-   
 }
 
 #pragma mark - delegate convenience function
@@ -315,5 +323,31 @@ static NSString *const kQQBaseRespErrorDomain = @"QQShareManager.qqBaseRespError
    return error;
 }
 
+/**
+ 检查是否安装手机qq,若未安装手机qq，则向delegate发送代理方法
+
+ @return YES，已安装手机qq；NO，未安装手机qq
+ */
+- (BOOL)cheakIsQQInstalled
+{
+   if(![self isQQInstalled]) {
+      [self delegateQQShareSendRequestResult:EQQAPIQQNOTINSTALLED];
+      return NO;
+   }
+   return YES;
+}
+
+
+/**
+ 检查文件名后缀判断是否为图片
+
+ @param fileName 文件名
+ @return 是否为图片文件后缀
+ */
+- (BOOL)isImageFileName:(NSString *)fileName
+{
+   return [fileName hasSuffix:@".png"] ||
+   [fileName hasSuffix:@".jpg"];
+}
 
 @end
