@@ -48,6 +48,7 @@
 		<string>mqqopensdkdataline</string>
 		<string>wtloginmqq2</string>
 		<string>mqqOpensdkSSoLogin</string>
+		<string>mqqopensdkapiV4</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

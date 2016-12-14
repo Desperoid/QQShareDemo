@@ -67,31 +67,53 @@ static NSString *const QQAppId = @"1105800529";
 }
 
 #pragma mark - QQ Share
-- (BOOL)shareToQQWithTextMessage:(NSString *)text
+- (BOOL)shareTextMessage:(NSString *)text toPlatform:(QQPlatform) platform
 {
    if (![self cheakIsQQInstalled]) {
       return NO;
    }
-   QQApiTextObject *txtObj = [QQApiTextObject objectWithText:text];
-   SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:txtObj];
-   QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-   [self delegateQQShareSendRequestResult:sent];
-   return sent == EQQAPISENDSUCESS;
+   if (platform == QQPlatformQQ) {
+      QQApiTextObject *txtObj = [QQApiTextObject objectWithText:text];
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:txtObj];
+      QQApiSendResultCode sent = [QQApiInterface sendReq:req];
+      [self delegateQQShareSendRequestResult:sent];
+      return sent == EQQAPISENDSUCESS;
+   }
+   else if (platform == QQPlatformQZone) {
+      QQApiImageArrayForQZoneObject *objc = [QQApiImageArrayForQZoneObject objectWithimageDataArray:nil title:text];
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:objc];
+      QQApiSendResultCode sent = [QQApiInterface sendReq:req];
+      [self delegateQQShareSendRequestResult:sent];
+      return sent == EQQAPISENDSUCESS;
+   }
+   return NO;
 }
 
-- (BOOL)shareToQQWithImageData:(NSData *)imageData
-              preivewImageData:(NSData *)previewImageData
-                         title:(NSString *)title
-                   description:(NSString *)description
+- (BOOL)shareImageDatas:(NSArray<NSData*>*)imagesData
+               preivewImageData:(NSData *)previewImageData
+                          title:(NSString *)title
+                    description:(NSString *)description
+                     toPlatform:(QQPlatform) platform;
 {
    if (![self cheakIsQQInstalled]) {
       return NO;
    }
-   QQApiImageObject *imageObj = [QQApiImageObject objectWithData:imageData previewImageData:previewImageData title:title description:description];
-   SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imageObj];
-   QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-   [self delegateQQShareSendRequestResult:sent];
-   return sent == EQQAPISENDSUCESS;
+   if (platform == QQPlatformQQ) {
+      QQApiImageObject *imageObj = [QQApiImageObject objectWithData:[imagesData firstObject] previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imageObj];
+      QQApiSendResultCode sent = [QQApiInterface sendReq:req];
+      [self delegateQQShareSendRequestResult:sent];
+      return sent == EQQAPISENDSUCESS;
+   }
+   else if (platform == QQPlatformQZone) {
+      QQApiImageArrayForQZoneObject *obj = [QQApiImageArrayForQZoneObject objectWithimageDataArray:imagesData title:title];
+      obj.description = description;
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:obj];
+      QQApiSendResultCode sent = [QQApiInterface sendReq:req];
+      [self delegateQQShareSendRequestResult:sent];
+      return sent == EQQAPISENDSUCESS;
+   }
+   return NO;
 }
 
 - (BOOL)shareToQQFavoritesWithImagesData:(NSArray<NSData *> *)imagesData
@@ -193,7 +215,8 @@ static NSString *const QQAppId = @"1105800529";
    if (![self cheakIsQQInstalled]) {
       return NO;
    }
-   QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageURL:imageURL];
+   NSData *imageDate = [NSData dataWithContentsOfURL:imageURL];
+   QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageData:imageDate];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:newsObj];
    QQApiSendResultCode sent;
    if (platform == QQPlatformQQ) {

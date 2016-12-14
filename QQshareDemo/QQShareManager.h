@@ -74,24 +74,27 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
 - (BOOL)isQQInstalled;
 
 /**
- 分享纯文字到qq
+ 分享纯文字
 
  @param text 分享文字内容
+ @param platform  分享平台:QQ,QZONE
  */
-- (BOOL)shareToQQWithTextMessage:(NSString *)text;
+- (BOOL)shareTextMessage:(NSString *)text toPlatform:(QQPlatform) platform;
 
 /**
- 分享纯图片到qq
+ 分享纯图片
 
- @param imageData 分享图片data
+ @param imageData 包含分享图片data的数组,在向qq好友分享时，只有第一个图片能分享出去,QZONE分享选择多于20张图片，最后能传过去的也只有20张
  @param previewImageData 分享预览图片data
  @param title 分享标题
  @param description 分享描述
+ @param platform  分享平台:QQ,QZONE
  */
-- (BOOL)shareToQQWithImageData:(NSData *)imageData
-              preivewImageData:(NSData *)previewImageData
-                         title:(NSString *)title
-                   description:(NSString *)description;
+- (BOOL)shareImageDatas:(NSArray<NSData*>*)imageData
+               preivewImageData:(NSData *)previewImageData
+                          title:(NSString *)title
+                    description:(NSString *)description
+                     toPlatform:(QQPlatform) platform;
 
 /**
  分享多张图片到QQ收藏
