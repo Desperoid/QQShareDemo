@@ -10,6 +10,7 @@
 #import <TencentOpenAPI/TencentOAuth.h>
 #import <TencentOpenAPI/QQApiInterface.h>
 #import "QQShareManager.h"
+#import <Social/Social.h>
 @interface ShareViewController ()<QQShareManagerDelegate>
 @end
 
@@ -146,8 +147,11 @@
 
 - (void)shareFile
 {
-   NSString *filePath = [[NSBundle mainBundle] pathForResource:@"vulcan" ofType:@"png"];
+   NSString *filePath = [[NSBundle mainBundle] pathForResource:@"Doug Paisley - No One But You" ofType:@"mp3"];
    NSData *imageDate = [NSData dataWithContentsOfFile:filePath];
-   [[QQShareManager shareInstance] shareToQQWithFilePath:filePath fileName:@"vulcan.png" preiviewImageData:imageDate title:@"vulcan" description:@"阿斯顿马丁vulcan"];
+   if (![[QQShareManager shareInstance] shareToQQWithFilePath:filePath fileName:@"Doug Paisley - No One But You.mp3" preiviewImageData:nil title:@"Doug Paisley - No One But You.mp3" description:@"music"]){
+      UIDocumentInteractionController *dic = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
+      [dic presentOpenInMenuFromRect:self.view.bounds inView:self.view animated:YES];
+   }
 }
 @end

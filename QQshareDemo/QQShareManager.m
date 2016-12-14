@@ -10,7 +10,7 @@
 #import "WeakObject.h"
 
 static NSString *const QQAppId = @"1105800529";
-
+static const NSUInteger fiveM = 1024*1024*5;
 
 @interface QQShareManager ()
 @property (nonatomic, strong) TencentOAuth *tencentOAuth;
@@ -69,7 +69,7 @@ static NSString *const QQAppId = @"1105800529";
 #pragma mark - QQ Share
 - (BOOL)shareTextMessage:(NSString *)text toPlatform:(QQPlatform) platform
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    if (platform == QQPlatformQQ) {
@@ -95,11 +95,15 @@ static NSString *const QQAppId = @"1105800529";
                     description:(NSString *)description
                      toPlatform:(QQPlatform) platform;
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    if (platform == QQPlatformQQ) {
-      QQApiImageObject *imageObj = [QQApiImageObject objectWithData:[imagesData firstObject] previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
+      NSData *shareImageData = [imagesData firstObject];
+      if (![self checkFileSize:shareImageData.length]) {
+         return NO;
+      }
+      QQApiImageObject *imageObj = [QQApiImageObject objectWithData:shareImageData previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imageObj];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
       [self delegateQQShareSendRequestResult:sent];
@@ -121,7 +125,7 @@ static NSString *const QQAppId = @"1105800529";
                                    title:(NSString *)title
                              description:(NSString *)description
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    QQApiImageObject *imgObj = [QQApiImageObject objectWithData:previewImageData previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
@@ -138,11 +142,14 @@ static NSString *const QQAppId = @"1105800529";
                         title:(NSString *)title
                   description:(NSString *)description
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
+      return NO;
+   }
+   NSData *fileData = [NSData dataWithContentsOfFile:filePath];
+   if (![self checkFileSize:fileData.length]) {
       return NO;
    }
    if ( [self isImageFileName:filePath]) {
-      NSData *fileData = [NSData dataWithContentsOfFile:filePath];
       QQApiImageObject *imgObjc = [QQApiImageObject objectWithData:fileData previewImageData:imageData title:title description:description];
       [imgObjc setCflag:kQQAPICtrlFlagQQShareDataline];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imgObjc];
@@ -151,8 +158,12 @@ static NSString *const QQAppId = @"1105800529";
       return sent == EQQAPISENDSUCESS;
    }
    else {
-      NSData *fileData = [NSData dataWithContentsOfFile:filePath];
       QQApiFileObject *fileObj = [QQApiFileObject objectWithData:fileData previewImageData:imageData title:title description:description];
+      BOOL isFileGreatThan5M = fileObj.data.length > 1024*1024*5;
+      if (isFileGreatThan5M) {
+         [self delegateQQShareSendRequestResult:EQQAPIMESSAGECONTENTINVALID];
+         return NO;
+      }
       fileObj.fileName = fileName;
       [fileObj setCflag:kQQAPICtrlFlagQQShareDataline];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:fileObj];
@@ -169,7 +180,7 @@ static NSString *const QQAppId = @"1105800529";
           description:(NSString *)description
          toQQPlatform:(QQPlatform)platform
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    QQApiAudioObject *audioObj = [QQApiAudioObject objectWithURL:url title:title description:description previewImageURL:imageURL];
@@ -193,7 +204,7 @@ static NSString *const QQAppId = @"1105800529";
           description:(NSString *)description
          toQQPlatform:(QQPlatform)platform
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    QQApiVideoObject *videoObj = [QQApiVideoObject objectWithURL:url title:title description:description previewImageURL:imageURL];
@@ -212,7 +223,7 @@ static NSString *const QQAppId = @"1105800529";
 
 - (BOOL)shareURL:(NSURL *)url previewImageURL:(NSURL *)imageURL title:(NSString *)title description:(NSString *)description toQQPlatform:(QQPlatform)platform
 {
-   if (![self cheakIsQQInstalled]) {
+   if (![self checkIsQQInstalled]) {
       return NO;
    }
    NSData *imageDate = [NSData dataWithContentsOfURL:imageURL];
@@ -358,10 +369,32 @@ static NSString *const kQQBaseRespErrorDomain = @"QQShareManager.qqBaseRespError
 
  @return YES，已安装手机qq；NO，未安装手机qq
  */
-- (BOOL)cheakIsQQInstalled
+- (BOOL)checkIsQQInstalled
 {
    if(![self isQQInstalled]) {
       [self delegateQQShareSendRequestResult:EQQAPIQQNOTINSTALLED];
+      return NO;
+   }
+   return YES;
+}
+
+
+/**
+ 检查文件文件大小是否支持分享发送，最大文件为5m
+
+ @param filesize 文件大小
+ @return 文件大小是否支持分享发送
+ */
+- (BOOL)checkFileSize:(NSUInteger)filesize
+{
+   if(filesize > fiveM) {
+      NSError *error = [NSError errorWithDomain:kSendResultErrorDomain code:1000 userInfo:@{@"errorDescription":@"File size is too big"}];
+      for (WeakObject *wo in self.listeners) {
+         id<QQShareManagerDelegate> listener = wo.weakObject;
+         if ([listener respondsToSelector:@selector(onQQShareSendRequestResult:error:)]) {
+            [listener onQQShareSendRequestResult:QQShareManagerResultFail error:error];
+         }
+      }
       return NO;
    }
    return YES;
