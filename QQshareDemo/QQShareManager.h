@@ -16,6 +16,26 @@ typedef NS_ENUM(NSUInteger, QQShareManagerResult) {
    QQShareManagerResultFail,
 };
 
+typedef NS_ENUM(NSUInteger, QQShareManagerErrorCode) {
+   EQQShareManagerSENDSUCESS = 0,
+   EQQShareManagerQNOTINSTALLED = 1,
+   EQQShareManagerQQNOTSUPPORTAPI = 2,
+   EQQShareManagerMESSAGETYPEINVALID = 3,
+   EQQShareManagerMESSAGECONTENTNULL = 4,
+   EQQShareManagerMESSAGECONTENTINVALID = 5,
+   EQQShareManagerAPPNOTREGISTED = 6,
+   EQQShareManagerAPPSHAREASYNC = 7,
+   EQQShareManagerQQNOTSUPPORTAPI_WITH_ERRORSHOW = 8,
+   EQQShareManagerSENDFAILD = -1,
+   //qzone分享不支持text类型分享
+   EQQShareManagerQZONENOTSUPPORTTEXT = 10000,
+   //qzone分享不支持image类型分享
+   EQQShareManagerQZONENOTSUPPORTIMAGE = 10001,
+   //当前QQ版本太低，需要更新至新版本才可以支持
+   EQQShareManagerVERSIONNEEDUPDATE = 10002,
+   EQQshareManagerTOOBIGDATASIZE = -2,
+};
+
 @protocol QQShareManagerDelegate <NSObject>
 @optional
 
@@ -74,10 +94,19 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
 - (BOOL)isQQInstalled;
 
 /**
+ 分享本地文件数据大小是否合法
+
+ @param fileSize 分享本地文件的大小
+ @return 数据大小是否合法
+ */
+- (BOOL)isShareFileSizeLegal:(NSUInteger)fileSize;
+
+/**
  分享纯文字
 
  @param text 分享文字内容
  @param platform  分享平台:QQ,QZONE
+ @return 发起分享是否成功
  */
 - (BOOL)shareTextMessage:(NSString *)text toPlatform:(QQPlatform) platform;
 
@@ -89,6 +118,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  @param platform  分享平台:QQ,QZONE
+ @return 发起分享是否成功
  */
 - (BOOL)shareImageDatas:(NSArray<NSData*>*)imageData
                preivewImageData:(NSData *)previewImageData
@@ -103,6 +133,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param previewImageData 分享预览图片data
  @param title 分享标题
  @param description 分享描述
+ @return 发起分享是否成功
  */
 - (BOOL)shareToQQFavoritesWithImagesData:(NSArray<NSData*>*)imagesData
                         previewImageData:(NSData *)previewImageData
@@ -110,23 +141,40 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
                              description:(NSString *)description;
 
 /**
- 分享新闻（分享url链接）
+ 分享新闻（分享url链接） 本地图片
 
  @param url 点击跳转URL
- @param imageURL 分享预览图片URL
+ @param imageURL 分享本地图片URL
  @param title 主题
  @param description 描述
  @param platform 平台，QQ或QZONE
+ @return 发起分享是否成功
  */
 - (BOOL)shareURL:(NSURL *)url
- previewImageURL:(NSURL *)imageURL
+   localImageURL:(NSURL *)imageURL
+           title:(NSString *)title
+     description:(NSString *)description
+    toQQPlatform:(QQPlatform)platform;
+
+/**
+ 分享新闻（分享url链接） 网络图片
+
+ @param url 点击跳转URL
+ @param imageURL 分享网络图片URL
+ @param title 主题
+ @param description 描述
+ @param platform 平台，QQ或QZONE
+ @return 发起分享是否成功
+ */
+- (BOOL)shareURL:(NSURL *)url
+ networkImageURL:(NSURL *)imageURL
            title:(NSString *)title
      description:(NSString *)description
     toQQPlatform:(QQPlatform)platform;
 
 
 /**
- 分享音乐
+ 分享音乐 (网络音乐)
 
  @param url  分享跳转URL
  @param imageURL 分享预览图片URL
@@ -134,6 +182,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  @param platform 平台，QQ或QZONE
+ @return 发起分享是否成功
  */
 - (BOOL)shareMusicURL:(NSURL *)url
       preivewImageURL:(NSURL *)imageURL
@@ -144,7 +193,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
 
 
 /**
- 分享视频
+ 分享视频 (网络视频)
 
  @param url 分享跳转URL
  @param imageURL 分享预览图片URL
@@ -152,6 +201,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param title 分享标题
  @param description 分享描述
  @param platform 平台，QQ或QZONE
+ @return 发起分享是否成功
  */
 - (BOOL)shareVideoURL:(NSURL *)url
       previewImageURL:(NSURL *)imageURL
@@ -168,6 +218,7 @@ typedef NS_ENUM(NSUInteger, QQPlatform) {
  @param imageData 分享预览图
  @param title 分享标题
  @param description 分享描述
+ @return 发起分享是否成功
  */
 - (BOOL)shareToQQWithFilePath:(NSString *)filePath
                      fileName:(NSString *)fileName

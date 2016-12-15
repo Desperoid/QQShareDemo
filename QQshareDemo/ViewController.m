@@ -24,6 +24,7 @@ static NSString * const cellIdentifier = @"cellIdentifier";
                       @"纯图片分享",
                       @"新闻分享",
                       @"音乐分享",
+                      @"视频分享",
                       @"文件分享",
                       @"添加图片到收藏"];
    // Do any additional setup after loading the view, typically from a nib.
@@ -82,9 +83,12 @@ static NSString * const cellIdentifier = @"cellIdentifier";
             t = ShareTypeMusic;
             break;
          case 4:
-            t = ShareTypeFile;
+            t = ShareTypeVideo;
             break;
          case 5:
+            t = ShareTypeFile;
+            break;
+         case 6:
             t = ShareTypeImagesToFavorite;
          default:
             break;

@@ -66,6 +66,11 @@ static const NSUInteger fiveM = 1024*1024*5;
    return [QQApiInterface isQQInstalled];
 }
 
+- (BOOL)isShareFileSizeLegal:(NSUInteger)fileSize
+{
+   return fileSize <= fiveM;
+}
+
 #pragma mark - QQ Share
 - (BOOL)shareTextMessage:(NSString *)text toPlatform:(QQPlatform) platform
 {
@@ -76,14 +81,18 @@ static const NSUInteger fiveM = 1024*1024*5;
       QQApiTextObject *txtObj = [QQApiTextObject objectWithText:text];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:txtObj];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
    else if (platform == QQPlatformQZone) {
       QQApiImageArrayForQZoneObject *objc = [QQApiImageArrayForQZoneObject objectWithimageDataArray:nil title:text];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:objc];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
    return NO;
@@ -103,10 +112,12 @@ static const NSUInteger fiveM = 1024*1024*5;
       if (![self checkFileSize:shareImageData.length]) {
          return NO;
       }
-      QQApiImageObject *imageObj = [QQApiImageObject objectWithData:shareImageData previewImageData:previewImageData title:title description:description imageDataArray:imagesData];
+      QQApiImageObject *imageObj = [QQApiImageObject objectWithData:shareImageData previewImageData:previewImageData title:title description:description imageDataArray:nil];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imageObj];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
    else if (platform == QQPlatformQZone) {
@@ -114,7 +125,9 @@ static const NSUInteger fiveM = 1024*1024*5;
       obj.description = description;
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:obj];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
    return NO;
@@ -132,7 +145,9 @@ static const NSUInteger fiveM = 1024*1024*5;
    [imgObj setCflag:kQQAPICtrlFlagQQShareFavorites];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imgObj];
    QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-   [self delegateQQShareSendRequestResult:sent];
+   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+   QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+   [self delegateQQShareSendRequestResult:result error:error];
    return sent == EQQAPISENDSUCESS;
 }
 
@@ -154,21 +169,20 @@ static const NSUInteger fiveM = 1024*1024*5;
       [imgObjc setCflag:kQQAPICtrlFlagQQShareDataline];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:imgObjc];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
    else {
       QQApiFileObject *fileObj = [QQApiFileObject objectWithData:fileData previewImageData:imageData title:title description:description];
-      BOOL isFileGreatThan5M = fileObj.data.length > 1024*1024*5;
-      if (isFileGreatThan5M) {
-         [self delegateQQShareSendRequestResult:EQQAPIMESSAGECONTENTINVALID];
-         return NO;
-      }
       fileObj.fileName = fileName;
       [fileObj setCflag:kQQAPICtrlFlagQQShareDataline];
       SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:fileObj];
       QQApiSendResultCode sent = [QQApiInterface sendReq:req];
-      [self delegateQQShareSendRequestResult:sent];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+      QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+      [self delegateQQShareSendRequestResult:result error:error];
       return sent == EQQAPISENDSUCESS;
    }
 }
@@ -193,8 +207,10 @@ static const NSUInteger fiveM = 1024*1024*5;
    else if (platform == QQPlatformQZone) {
       sent = [QQApiInterface SendReqToQZone:req];
    }
-   [self delegateQQShareSendRequestResult:sent];
-   return sent == EQQAPISENDSUCESS;
+   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+   QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+   [self delegateQQShareSendRequestResult:result error:error];
+   return sent == EQQAPISENDSUCESS || sent == EQQAPIAPPSHAREASYNC; //分享网络图片URL的时候会出现 EQQAPIAPPSHAREASYNC
 }
 
 - (BOOL)shareVideoURL:(NSURL *)url
@@ -207,26 +223,38 @@ static const NSUInteger fiveM = 1024*1024*5;
    if (![self checkIsQQInstalled]) {
       return NO;
    }
-   QQApiVideoObject *videoObj = [QQApiVideoObject objectWithURL:url title:title description:description previewImageURL:imageURL];
+   /*
+    * QQApiVideoObject类型的分享，目前在android和PC上接收消息时，展现有问题，待手Q版本以后更新支持
+    * 目前如果要分享视频请使用 QQApiNewsObject 类型，URL填视频所在的H5地址
+    
+   QQApiVideoObject *videoObj = [QQApiVideoObject objectWithURL:flashURL title:title description:description previewImageURL:imageURL];
    [videoObj setFlashURL:flashURL];
-   SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:videoObj];
+    */
+   QQApiNewsObject *videoObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageURL:imageURL];
    QQApiSendResultCode sent;
    if (platform == QQPlatformQQ) {
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:videoObj];
       sent = [QQApiInterface sendReq:req];
    }
    else if (platform == QQPlatformQZone) {
+      SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:videoObj];
       sent = [QQApiInterface SendReqToQZone:req];
    }
-   [self delegateQQShareSendRequestResult:sent];
-   return sent == EQQAPISENDSUCESS;
+   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+   QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+   [self delegateQQShareSendRequestResult:result error:error];
+   return sent == EQQAPISENDSUCESS || sent == EQQAPIAPPSHAREASYNC;   //分享网络图片URL的时候会出现 EQQAPIAPPSHAREASYNC
 }
 
-- (BOOL)shareURL:(NSURL *)url previewImageURL:(NSURL *)imageURL title:(NSString *)title description:(NSString *)description toQQPlatform:(QQPlatform)platform
+- (BOOL)shareURL:(NSURL *)url localImageURL:(NSURL *)imageURL title:(NSString *)title description:(NSString *)description toQQPlatform:(QQPlatform)platform
 {
    if (![self checkIsQQInstalled]) {
       return NO;
    }
    NSData *imageDate = [NSData dataWithContentsOfURL:imageURL];
+   if (![self checkFileSize:imageDate.length]) {
+      return NO;
+   }
    QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageData:imageDate];
    SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:newsObj];
    QQApiSendResultCode sent;
@@ -236,8 +264,30 @@ static const NSUInteger fiveM = 1024*1024*5;
    else if (platform == QQPlatformQZone) {
       sent = [QQApiInterface SendReqToQZone:req];
    }
-   [self delegateQQShareSendRequestResult:sent];
+   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+   QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+   [self delegateQQShareSendRequestResult:result error:error];
    return sent == EQQAPISENDSUCESS;
+}
+
+- (BOOL)shareURL:(NSURL *)url networkImageURL:(NSURL *)imageURL title:(NSString *)title description:(NSString *)description toQQPlatform:(QQPlatform)platform
+{
+   if (![self checkIsQQInstalled]) {
+      return NO;
+   }
+   QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url title:title description:description previewImageURL:imageURL];
+   SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:newsObj];
+   QQApiSendResultCode sent;
+   if (platform == QQPlatformQQ) {
+      sent = [QQApiInterface sendReq:req];
+   }
+   else if (platform == QQPlatformQZone) {
+      sent = [QQApiInterface SendReqToQZone:req];
+   }
+   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
+   QQShareManagerResult result = sent == EQQAPISENDSUCESS?QQShareManagerResultSuccess:QQShareManagerResultFail;
+   [self delegateQQShareSendRequestResult:result error:error];
+   return sent == EQQAPISENDSUCESS || sent == EQQAPIAPPSHAREASYNC; //分享网络图片URL的时候会出现 EQQAPIAPPSHAREASYNC
 }
 
 #pragma mark - TencentLoginDelegate
@@ -264,7 +314,9 @@ static const NSUInteger fiveM = 1024*1024*5;
 
 - (void)onResp:(QQBaseResp *)resp
 {
-   [self delegateQQShareShareResult:resp];
+   NSError *error = [self generatErrorWithQQBaseResp:resp];
+   QQShareManagerResult result = [resp.result isEqualToString:@"0"]?QQShareManagerResultSuccess : QQShareManagerResultFail;
+   [self delegateQQShareShareResult:result error:error];
 }
 
 - (void)isOnlineResponse:(NSDictionary *)response
@@ -273,10 +325,8 @@ static const NSUInteger fiveM = 1024*1024*5;
 }
 
 #pragma mark - delegate convenience function
-- (void)delegateQQShareSendRequestResult:(QQApiSendResultCode)sent
+- (void)delegateQQShareSendRequestResult:(QQShareManagerResult)result error:(NSError *)error
 {
-   QQShareManagerResult result = sent == 0 ? QQShareManagerResultSuccess : QQShareManagerResultFail;
-   NSError *error = [self generateErrorWithQQApiSendResultCode:sent];
    for (WeakObject *wo in self.listeners) {
       id<QQShareManagerDelegate> listener = wo.weakObject;
       if ([listener respondsToSelector:@selector(onQQShareSendRequestResult:error:)]) {
@@ -286,10 +336,8 @@ static const NSUInteger fiveM = 1024*1024*5;
    
 }
 
-- (void)delegateQQShareShareResult:(QQBaseResp *)resp
+- (void)delegateQQShareShareResult:(QQShareManagerResult)result error:(NSError *)error
 {
-   QQShareManagerResult result = [resp.result isEqualToString:@"0"]?QQShareManagerResultSuccess : QQShareManagerResultFail;
-   NSError *error = [self generatErrorWithQQBaseResp:resp];
    for (WeakObject *wo in self.listeners) {
       id<QQShareManagerDelegate> listener = wo.weakObject;
       if ([listener respondsToSelector:@selector(onQQShareShareResult:error:)]) {
@@ -372,7 +420,8 @@ static NSString *const kQQBaseRespErrorDomain = @"QQShareManager.qqBaseRespError
 - (BOOL)checkIsQQInstalled
 {
    if(![self isQQInstalled]) {
-      [self delegateQQShareSendRequestResult:EQQAPIQQNOTINSTALLED];
+      NSError *error = [self generateErrorWithQQApiSendResultCode:EQQAPIQQNOTINSTALLED];
+      [self delegateQQShareSendRequestResult:QQShareManagerResultFail error:error];
       return NO;
    }
    return YES;
@@ -387,14 +436,9 @@ static NSString *const kQQBaseRespErrorDomain = @"QQShareManager.qqBaseRespError
  */
 - (BOOL)checkFileSize:(NSUInteger)filesize
 {
-   if(filesize > fiveM) {
-      NSError *error = [NSError errorWithDomain:kSendResultErrorDomain code:1000 userInfo:@{@"errorDescription":@"File size is too big"}];
-      for (WeakObject *wo in self.listeners) {
-         id<QQShareManagerDelegate> listener = wo.weakObject;
-         if ([listener respondsToSelector:@selector(onQQShareSendRequestResult:error:)]) {
-            [listener onQQShareSendRequestResult:QQShareManagerResultFail error:error];
-         }
-      }
+   if(![self isShareFileSizeLegal:filesize]) {
+      NSError *error = [NSError errorWithDomain:kSendResultErrorDomain code:EQQshareManagerTOOBIGDATASIZE userInfo:@{@"errorDescription":@"File size is too big"}];
+      [self delegateQQShareSendRequestResult:QQShareManagerResultFail error:error];
       return NO;
    }
    return YES;

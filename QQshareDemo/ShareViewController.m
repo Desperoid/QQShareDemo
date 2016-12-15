@@ -52,6 +52,9 @@
       case ShareTypeMusic:
          [self shareMusicPlatForm:QQPlatformQZone];
          break;
+      case ShareTypeVideo:
+         [self shareVideoPlatform:QQPlatformQZone];
+         break;
       case ShareTypeFile:
          [self shareFile];
       default:
@@ -76,6 +79,9 @@
       case ShareTypeMusic:
          [self shareMusicPlatForm:QQPlatformQQ];
          break;
+      case ShareTypeVideo:
+         [self shareVideoPlatform:QQPlatformQQ];
+         break;
       case ShareTypeFile:
          [self shareFile];
       default:
@@ -92,6 +98,23 @@
    }
    else {
       resultString = @"分享失败";
+   }
+   UIAlertController *controller = [UIAlertController alertControllerWithTitle:resultString message:error.userInfo[@"errorDescription"] preferredStyle:UIAlertControllerStyleAlert ];
+   UIAlertAction *action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [controller dismissViewControllerAnimated:YES completion:nil];
+   }];
+   [controller addAction:action];
+   [self presentViewController:controller animated:NO completion:nil];
+}
+
+- (void)onQQShareSendRequestResult:(QQShareManagerResult)result error:(NSError *)error
+{
+   NSString *resultString;
+   if (result == QQShareManagerResultSuccess) {
+      resultString = @"启动qq成功";
+   }
+   else {
+      resultString = @"启动QQ失败";
    }
    UIAlertController *controller = [UIAlertController alertControllerWithTitle:resultString message:error.userInfo[@"errorDescription"] preferredStyle:UIAlertControllerStyleAlert ];
    UIAlertAction *action = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -134,7 +157,7 @@
 - (void)shareURLPlatForm:(QQPlatform)platform
 {
    NSURL *imageURL = [[NSBundle mainBundle] URLForResource:@"vulcan" withExtension:@"png"];
-   [[QQShareManager shareInstance] shareURL:[NSURL URLWithString:@"http://www.autohome.com.cn/3730/6797/"] previewImageURL:imageURL title:@"vulcan" description:@"阿斯顿·马丁Vulcan" toQQPlatform:platform];
+   [[QQShareManager shareInstance] shareURL:[NSURL URLWithString:@"http://www.autohome.com.cn/3730/6797/"] localImageURL:imageURL title:@"vulcan" description:@"阿斯顿·马丁Vulcan" toQQPlatform:platform];
 }
 
 - (void)shareMusicPlatForm:(QQPlatform)platform
@@ -145,10 +168,16 @@
    [[QQShareManager shareInstance] shareMusicURL:MusicURL preivewImageURL:imageURL flashURL:flashURL title:@"なんでもないや" description:@"你的名字" toQQPlatform:platform];
 }
 
+- (void)shareVideoPlatform:(QQPlatform)paltform
+{
+   NSURL *videoURL = [NSURL URLWithString:@"http://www.bilibili.com/video/av7528487/?tg"];
+   NSURL *flashURL = [NSURL URLWithString:@"http://player.youku.com/player.php/sid/XMTg1Nzc0MDI2NA==/partnerid/d50c8689ebe03441/v.swf"];
+   [[QQShareManager shareInstance] shareVideoURL:videoURL previewImageURL:[NSURL URLWithString:@"http://i0.hdslb.com/bfs/archive/890ce99454171b3055fcb0405fde6066f633b0ea.jpg"] flashURL:flashURL title:@"【全场录播】上海哔哩哔哩vs北京首钢 第十七轮 CBA16-17赛季" description:nil toQQPlatform:paltform];
+}
+
 - (void)shareFile
 {
    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"Doug Paisley - No One But You" ofType:@"mp3"];
-   NSData *imageDate = [NSData dataWithContentsOfFile:filePath];
    if (![[QQShareManager shareInstance] shareToQQWithFilePath:filePath fileName:@"Doug Paisley - No One But You.mp3" preiviewImageData:nil title:@"Doug Paisley - No One But You.mp3" description:@"music"]){
       UIDocumentInteractionController *dic = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
       [dic presentOpenInMenuFromRect:self.view.bounds inView:self.view animated:YES];

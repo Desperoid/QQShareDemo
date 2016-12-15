@@ -14,6 +14,7 @@ typedef NS_ENUM(NSUInteger, ShareType) {
    ShareTypeImagesToFavorite,
    ShareTypeURL,
    ShareTypeMusic,
+   ShareTypeVideo,
    ShareTypeFile,
 };
 
